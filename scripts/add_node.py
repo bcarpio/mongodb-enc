@@ -4,13 +4,9 @@ from pymongo import *
 import yaml
 import sys
 from ConfigParser import SafeConfigParser
-from optparse import OptionParser
+import argparse
 import glob
 
-
-if (len(sys.argv) < 2):
-    print "ERROR: Please Supply A Hostname or FQDN"
-    sys.exit(1)
 
 parser = SafeConfigParser()
 config = ['../conf/conf.ini']
@@ -19,8 +15,23 @@ db = parser.get('mongodb_info', 'mongodb_db_name')
 col = parser.get('mongodb_info', 'mongodb_db_name')
 host = parser.get('mongodb_info', 'mongodb_servers')
 
-cmd_parser = OptionParser()
-cmd_parser.add_option("-n", "--node", dest="node", help="Node To Add To ENC", metavar="NODE")
-cmd_parser.add_option("-c", "--class", dest="class", help="Class(s) To Be Added To Node In ENC", metavar="CLASS")
+def connect_mongodb():
+	con = Connection(host)
+	db = con.puppet
+	col = db.nodes
+	return col
 
-#doc = { 'node' : node, 'enc' : { 'classes': 
+def main():
+
+	cmd_parser = argparse.ArgumentParser(description='Add Nodes To Mongodb ENC')
+	cmd_parser.add_argument('-n', '--node', dest='puppet_node', required=True)
+	cmd_parser.add_argument('-c', '--classes', dest='puppet_classes', required=True)
+	cmd_parser.add_argument('-e', '--environment', dest='environment', default='production')
+	args = cmd_parser.parse_args()
+	col = connect_mongodb()
+	d = { 'node' : args.puppet_node, 'enc' : { 'classes': { args.puppet_classes : '' }, 'environment' : args.environment }}
+	col.insert(d)
+	
+
+if __name__ == "__main__":
+	main()
