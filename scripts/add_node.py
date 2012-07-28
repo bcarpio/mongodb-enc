@@ -11,14 +11,13 @@ import glob
 parser = SafeConfigParser()
 config = ['../conf/conf.ini']
 found = parser.read(config)
-db = parser.get('mongodb_info', 'mongodb_db_name')
-col = parser.get('mongodb_info', 'mongodb_db_name')
+database = parser.get('mongodb_info', 'mongodb_db_name')
+collection = parser.get('mongodb_info', 'mongodb_collection_name')
 host = parser.get('mongodb_info', 'mongodb_servers')
 
 def connect_mongodb():
 	con = Connection(host)
-	db = con.puppet
-	col = db.nodes
+	col = con[database][collection]
 	return col
 
 def main():
@@ -28,10 +27,9 @@ def main():
 	cmd_parser.add_argument('-c', '--classes', dest='puppet_classes', required=True)
 	cmd_parser.add_argument('-e', '--environment', dest='environment', default='production')
 	args = cmd_parser.parse_args()
-	col = connect_mongodb()
 	d = { 'node' : args.puppet_node, 'enc' : { 'classes': { args.puppet_classes : '' }, 'environment' : args.environment }}
+	col = connect_mongodb()
 	col.insert(d)
-	
 
 if __name__ == "__main__":
 	main()
