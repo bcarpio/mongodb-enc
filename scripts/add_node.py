@@ -4,6 +4,7 @@ from pymongo import *
 import yaml
 import sys
 from ConfigParser import SafeConfigParser
+from optparse import OptionParser
 import glob
 
 
@@ -17,18 +18,9 @@ found = parser.read(config)
 db = parser.get('mongodb_info', 'mongodb_db_name')
 col = parser.get('mongodb_info', 'mongodb_db_name')
 host = parser.get('mongodb_info', 'mongodb_servers')
-sep = '.'
-node = sys.argv[1]
-node = node.split('.')[0]
 
-def yaml_dump_mongodb():
-        con = Connection(host)
-        db = con.puppet
-        col = db.nodes
-        d = col.find_one({"node": node})
-        if d == None:
-				print "ERROR: Node "+node+" Not Found In ENC" 
-				sys.exit(1)
-        print yaml.safe_dump(d['enc'], default_flow_style=False)
+cmd_parser = OptionParser()
+cmd_parser.add_option("-n", "--node", dest="node", help="Node To Add To ENC", metavar="NODE")
+cmd_parser.add_option("-c", "--class", dest="class", help="Class(s) To Be Added To Node In ENC", metavar="CLASS")
 
-yaml_dump_mongodb()
+#doc = { 'node' : node, 'enc' : { 'classes': 
