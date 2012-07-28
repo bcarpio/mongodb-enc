@@ -6,6 +6,6 @@ This project is still under development. At any given moment it may or may not w
 
 ## Author Info
 
-Website: [Brian Carpio][http://www.briancarpio.com]
+Website: [Brian Carpio](http://www.briancarpio.com)
 
-Twitter: [Linsys][https://twitter.com/linsys]
+Twitter: [Linsys](https://twitter.com/linsys)
