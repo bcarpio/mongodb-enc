@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 from pymongo import *
 import yaml
 import sys
@@ -23,11 +22,14 @@ def connect_mongodb():
 def main():
 
 	cmd_parser = argparse.ArgumentParser(description='Add Nodes To Mongodb ENC')
-	cmd_parser.add_argument('-n', '--node', dest='puppet_node', required=True)
-	cmd_parser.add_argument('-c', '--classes', dest='puppet_classes', required=True)
-	cmd_parser.add_argument('-e', '--environment', dest='environment', default='production')
+	cmd_parser.add_argument('-n', '--node', dest='puppet_node', help='Puppet Node Hostname', required=True)
+	cmd_parser.add_argument('-c', '--class', dest='puppet_classes', help='Can specify multiple classes each with -c', action='append', required=True)
+	cmd_parser.add_argument('-e', '--environment', dest='environment', help='Optional, defaults to "production"', default='production')
 	args = cmd_parser.parse_args()
-	d = { 'node' : args.puppet_node, 'enc' : { 'classes': { args.puppet_classes : '' }, 'environment' : args.environment }}
+	c = {}
+	for pclass in args.puppet_classes:
+		c[pclass] = ''
+	d = { 'node' : args.puppet_node, 'enc' : { 'classes': c , 'environment' : args.environment }}
 	col = connect_mongodb()
 	col.insert(d)
 
