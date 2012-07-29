@@ -47,6 +47,7 @@ def main():
 			print args.puppet_node+" Exists In Mongodb. Please Remove Node"
 			sys.exit(1)
 
+	col.ensure_index('node', unique=True)
 	col.insert(d)
 
 if __name__ == "__main__":
