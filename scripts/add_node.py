@@ -36,7 +36,7 @@ def main():
 
 	if args.puppet_param:
 		args.puppet_param = dict([arg.split('=') for arg in args.puppet_param])
-		d['parameters'] = args.puppet_param
+		d['enc']['parameters'] = args.puppet_param
 	col = connect_mongodb()
 	col.insert(d)
 
