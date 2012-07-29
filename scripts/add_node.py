@@ -24,12 +24,19 @@ def main():
 	cmd_parser = argparse.ArgumentParser(description='Add Nodes To Mongodb ENC')
 	cmd_parser.add_argument('-n', '--node', dest='puppet_node', help='Puppet Node Hostname', required=True)
 	cmd_parser.add_argument('-c', '--class', dest='puppet_classes', help='Can specify multiple classes each with -c', action='append', required=True)
+	cmd_parser.add_argument('-p', '--param', dest='puppet_param', help='Can specify multiple paramaters each with -p', action='append')
 	cmd_parser.add_argument('-e', '--environment', dest='environment', help='Optional, defaults to "production"', default='production')
 	args = cmd_parser.parse_args()
+
 	c = {}
 	for pclass in args.puppet_classes:
 		c[pclass] = ''
+
 	d = { 'node' : args.puppet_node, 'enc' : { 'classes': c , 'environment' : args.environment }}
+
+	if args.puppet_param:
+		args.puppet_param = dict([arg.split('=') for arg in args.puppet_param])
+		d['parameters'] = args.puppet_param
 	col = connect_mongodb()
 	col.insert(d)
 
