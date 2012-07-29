@@ -37,7 +37,16 @@ def main():
 	if args.puppet_param:
 		args.puppet_param = dict([arg.split('=') for arg in args.puppet_param])
 		d['enc']['parameters'] = args.puppet_param
+
 	col = connect_mongodb()
+
+	check = col.find({ 'node' : args.puppet_node },{'node': 1})
+	for document in check:
+		node = document['node']
+		if node == args.puppet_node:  
+			print args.puppet_node+" Exists In Mongodb. Please Remove Node"
+			sys.exit(1)
+
 	col.insert(d)
 
 if __name__ == "__main__":
