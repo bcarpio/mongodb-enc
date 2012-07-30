@@ -23,10 +23,13 @@ node = node.split('.')[0]
 
 def yaml_dump_mongodb():
 	con = Connection(host)
+	default = con[database][collection].find_one({"node": "default"})
+	dclass = default['enc']['classes']
 	d = con[database][collection].find_one({"node": node}) 
 	if d == None:
 		print "ERROR: Node "+node+" Not Found In ENC" 
 		sys.exit(1)
+	d['enc']['classes'].update(dclass)
 	print yaml.safe_dump(d['enc'], default_flow_style=False)
 
 yaml_dump_mongodb()
