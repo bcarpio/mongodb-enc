@@ -12,7 +12,7 @@ if (len(sys.argv) < 2):
     sys.exit(1)
 
 parser = SafeConfigParser()
-config = ['../conf/conf.ini']
+config = os.path.join(os.path.dirname(__file__),"../conf/conf.ini")
 found = parser.read(config)
 database = parser.get('mongodb_info', 'mongodb_db_name')
 collection = parser.get('mongodb_info', 'mongodb_collection_name')
