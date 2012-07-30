@@ -2,7 +2,7 @@
 
 from pymongo import *
 import yaml
-import sys
+import sys, os
 from ConfigParser import SafeConfigParser
 import glob
 

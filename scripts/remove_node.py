@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from pymongo import *
 import yaml
-import sys
+import sys, os
 from ConfigParser import SafeConfigParser
 import argparse
 import glob
