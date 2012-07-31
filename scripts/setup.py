@@ -22,27 +22,36 @@ def connect_mongodb():
 def main():
 
 	cmd_parser = argparse.ArgumentParser(description='Add Default Node To Mongodb ENC')
-	cmd_parser.add_argument('-u', '--update', dest='puppet_update', help='Update Default Node')
-	cmd_parser.add_argument('-o', '--overwrite', dest='puppet_over', help='Overwrite Default Node') 
+	cmd_parser.add_argument('-a', '--action', dest='puppet_action', choices=['append', 'new'], help='Append Or Recreate Default Node', required=True)
 	cmd_parser.add_argument('-c', '--class', dest='puppet_classes', help='Can specify multiple classes each with -c', action='append', required=True)
 	args = cmd_parser.parse_args()
 
 
-	if not (args.puppet_update, args.puppet_over):
-		print Error
-		sys.exit(1)
 	c = {}
+	col = connect_mongodb()
+	col.ensure_index('node', unique=True)
+
 	for pclass in args.puppet_classes:
 		c[pclass] = ''
 
-	d = { 'node' : 'default', 'enc' : { 'classes': c }}
+	if args.puppet_action == 'append':
+		d = { 'node' : 'default', 'enc' : { 'classes': c }}
+		check = col.find_one({ 'node' : 'default' },{'node': 1})
+		if not check:
+			print "Default Node Doesn't Exist, Please Add It First"
+			sys.exit(1)
+		ec = col.find_one({ 'node' : 'default'})
+		ec['enc']['classes']
+		ec['enc']['classes'].update(c)
+		col.remove({ 'node' : 'default'})
+		col.insert(ec)
 
-	col = connect_mongodb()
-	check = col.find({ 'node' : 'default' },{'node': 1})
-
-	print d
-#	col.ensure_index('node', unique=True)
-#	col.insert(d)
+	if args.puppet_action == 'new':
+		d = { 'node' : 'default', 'enc' : { 'classes': c }}
+		check = col.find_one({ 'node' : 'default' },{'node': 1})
+		if check:
+			col.remove({ 'node' : 'default'})
+		col.insert(d)
 
 if __name__ == "__main__":
 	main()
