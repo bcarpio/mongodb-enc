@@ -29,19 +29,27 @@ def main():
 
 	# Connect to mongodb
 	con = Connection(host)
-
-	# Find the default node and pull out the classes
-	default = con[database][collection].find_one({"node": "default"})
-	dclass = default['enc']['classes']
-
+	col = con[database][collection]
+	
 	# Find the node given at a command line argument
 	d = con[database][collection].find_one({"node": node}) 
 	if d == None:
 		print "ERROR: Node "+node+" Not Found In ENC" 
 		sys.exit(1)
 
-	# Add the default classes to the queried node
-	d['enc']['classes'].update(dclass)
+	# Check if the node requiers inheritance
+	inherit = col.find_one({"node": node})
+	if 'inherit' in inherit:
+		inode = inherit['inherit']
+		if not col.find_one({"node" : inode}):
+			print "ERROR: Inheritance Node "+inode+" Not Found In ENC"
+			sys.exit(1)
+		iclass = col.find_one({"node": inode})
+		iclass = iclass['enc']['classes']
+		d['enc']['classes'].update(iclass)
+	else:
+		d['enc']['classes']
+
 	print yaml.safe_dump(d['enc'], default_flow_style=False)
 
 

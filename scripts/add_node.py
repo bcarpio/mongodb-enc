@@ -25,6 +25,7 @@ def main():
 	cmd_parser.add_argument('-n', '--node', dest='puppet_node', help='Puppet Node Hostname', required=True)
 	cmd_parser.add_argument('-c', '--class', dest='puppet_classes', help='Can specify multiple classes each with -c', action='append', required=True)
 	cmd_parser.add_argument('-p', '--param', dest='puppet_param', help='Can specify multiple paramaters each with -p', action='append')
+	cmd_parser.add_argument('-i', '--inherit', dest='puppet_inherit', help='Define a node to inherit classes from', action='store')
 	cmd_parser.add_argument('-e', '--environment', dest='environment', help='Optional, defaults to "production"', default='production')
 	args = cmd_parser.parse_args()
 
@@ -37,6 +38,9 @@ def main():
 	if args.puppet_param:
 		args.puppet_param = dict([arg.split('=') for arg in args.puppet_param])
 		d['enc']['parameters'] = args.puppet_param
+
+	if args.puppet_inherit:
+		d['inherit'] = args.puppet_inherit
 
 	col = connect_mongodb()
 
