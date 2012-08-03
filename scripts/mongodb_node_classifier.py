@@ -7,29 +7,43 @@ from ConfigParser import SafeConfigParser
 import glob
 
 
-if (len(sys.argv) < 2):
-    print "ERROR: Please Supply A Hostname or FQDN"
-    sys.exit(1)
+def main():
 
-parser = SafeConfigParser()
-config = os.path.join(os.path.dirname(__file__),"../conf/conf.ini")
-found = parser.read(config)
-database = parser.get('mongodb_info', 'mongodb_db_name')
-collection = parser.get('mongodb_info', 'mongodb_collection_name')
-host = parser.get('mongodb_info', 'mongodb_servers')
-sep = '.'
-node = sys.argv[1]
-node = node.split('.')[0]
+	if (len(sys.argv) < 2):
+   	 print "ERROR: Please Supply A Hostname or FQDN"
+   	 sys.exit(1)
 
-def yaml_dump_mongodb():
+	# Import conf.ini
+	parser = SafeConfigParser()
+	config = os.path.join(os.path.dirname(__file__),"../conf/conf.ini")
+	found = parser.read(config)
+	database = parser.get('mongodb_info', 'mongodb_db_name')
+	collection = parser.get('mongodb_info', 'mongodb_collection_name')
+	host = parser.get('mongodb_info', 'mongodb_servers')
+
+	# Probably want to remove this. This is because I don't use FQDNs in my current puppet manifest. 
+	# also made this easier for me to test.
+	sep = '.'
+	node = sys.argv[1]
+	node = node.split('.')[0]
+
+	# Connect to mongodb
 	con = Connection(host)
+
+	# Find the default node and pull out the classes
 	default = con[database][collection].find_one({"node": "default"})
 	dclass = default['enc']['classes']
+
+	# Find the node given at a command line argument
 	d = con[database][collection].find_one({"node": node}) 
 	if d == None:
 		print "ERROR: Node "+node+" Not Found In ENC" 
 		sys.exit(1)
+
+	# Add the default classes to the queried node
 	d['enc']['classes'].update(dclass)
 	print yaml.safe_dump(d['enc'], default_flow_style=False)
 
-yaml_dump_mongodb()
+
+if __name__ == "__main__":
+        main()
