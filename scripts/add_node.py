@@ -26,7 +26,7 @@ def main():
 	cmd_parser.add_argument('-a', '--action', dest='puppet_action', choices=['append', 'new'], help='Append Or Recreate Default Node', required=True)
 	cmd_parser.add_argument('-n', '--node', dest='puppet_node', help='Puppet Node Hostname', required=True)
 	cmd_parser.add_argument('-c', '--class', dest='puppet_classes', help='Can specify multiple classes each with -c', action='append')
-	cmd_parser.add_argument('-p', '--param', dest='puppet_param', help='Can specify multiple paramaters each with -p', action='append')
+	cmd_parser.add_argument('-p', '--param', dest='puppet_param', help='Can specify multiple parameters each with -p', action='append')
 	cmd_parser.add_argument('-i', '--inherit', dest='puppet_inherit', help='Define a node to inherit classes from', action='store', default='default')
 	cmd_parser.add_argument('-e', '--environment', dest='environment', help='Optional, defaults to "production"', default='production')
 	args = cmd_parser.parse_args()
@@ -99,12 +99,12 @@ def main():
 
 		if args.puppet_param:
 			
-			if 'paramaters' in node['enc']:
-				node['enc']['paramaters'].update(args.puppet_param)
+			if 'parameters' in node['enc']:
+				node['enc']['parameters'].update(args.puppet_param)
 			else:
-				node['enc']['paramaters'] = args.puppet_param
-			p = node['enc']['paramaters']
-			col.update({ 'node' : args.puppet_node}, { '$set': {'enc.paramaters' : p}})
+				node['enc']['parameters'] = args.puppet_param
+			p = node['enc']['parameters']
+			col.update({ 'node' : args.puppet_node}, { '$set': {'enc.parameters' : p}})
 
 		if args.puppet_inherit:
 			node['enc']['inherit'] = args.puppet_inherit
