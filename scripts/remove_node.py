@@ -26,7 +26,13 @@ def main():
 	args = cmd_parser.parse_args()
 
 	col = connect_mongodb()
-	col.remove({ 'node' : args.puppet_node})
+	isInode = col.find_one({ "inherit" : args.puppet_node })
+	if isInode:
+		isInode = col.find({ "inherit" : args.puppet_node })
+		for node in isInode:
+			print "ERROR: "+args.puppet_node+" is inherited by "+node['node']
+	else:
+		col.remove({ 'node' : args.puppet_node})
 
 if __name__ == "__main__":
 	main()

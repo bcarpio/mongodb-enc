@@ -32,21 +32,30 @@ def main():
 	col = con[database][collection]
 	
 	# Find the node given at a command line argument
-	d = con[database][collection].find_one({"node": node}) 
+	d = col.find_one({"node": node}) 
 	if d == None:
 		print "ERROR: Node "+node+" Not Found In ENC" 
 		sys.exit(1)
 
 	# Check if the node requiers inheritance
-	inherit = col.find_one({"node": node})
-	if 'inherit' in inherit:
-		inode = inherit['inherit']
-		if not col.find_one({"node" : inode}):
-			print "ERROR: Inheritance Node "+inode+" Not Found In ENC"
-			sys.exit(1)
-		iclass = col.find_one({"node": inode})
-		iclass = iclass['enc']['classes']
-		d['enc']['classes'].update(iclass)
+	n = col.find_one({"node": node})
+	if 'inherit' in n:
+		i = True
+		while i == True:
+			inode = n['inherit']
+			if not col.find_one({"node" : inode}):
+				print "ERROR: Inheritance Node "+inode+" Not Found In ENC"
+				sys.exit(1)
+			idict = col.find_one({"node": inode})
+			if 'classes' in idict['enc']:
+				iclass = idict['enc']['classes']
+				if 'classes' in n['enc']:
+					d['enc']['classes'].update(iclass)
+				else:
+					d['enc']['classes'] = iclass 
+			n = col.find_one({"node": inode})
+			if 'inherit' not in n:
+				i = False
 	else:
 		d['enc']['classes']
 
