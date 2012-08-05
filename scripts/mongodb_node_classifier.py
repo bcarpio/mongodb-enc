@@ -52,7 +52,7 @@ def main():
 				if 'classes' in n['enc']:
 					d['enc']['classes'].update(iclass)
 				else:
-					d['enc'] = { 'classes' : iclass }
+					d['enc']['classes'] = iclass 
 			n = col.find_one({"node": inode})
 			if 'inherit' not in n:
 				i = False
