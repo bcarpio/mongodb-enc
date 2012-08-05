@@ -1,8 +1,15 @@
 # Puppet ENC Using Mongodb
 
-## Still Under Development
+## Documentation
 
-This project is still under development. At any given moment it may or may not work as expeceted. Make sure to check the commit log to see what is going on. I will "try" and keep a master branch and a development branch with the master branch actually working. 
+Please refer to the [Wiki](https://github.com/bcarpio/mongodb-enc/wiki). 
+
+
+## Project Status
+
+This project is still in **Alpha**. This means at any given time the code is under active development.
+There is still one big change comming where I change the mongodb schema. I currently don't like how I have the mongodb laid out.
+If you are using this code and would like to make feature requests please do so in the issue tracker. 
 
 ## Author Info
 
