@@ -25,9 +25,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """
 from pymongo import Connection
-import sys, os
+import os
 from ConfigParser import SafeConfigParser
-import argparse
 
 def main():
     """ This script adds nodes to the mongodb enc """
