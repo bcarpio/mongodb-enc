@@ -1,2 +1,3 @@
 search.py
 report_mongo.py
+*.pyc

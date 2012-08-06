@@ -24,11 +24,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 :web: http://www.briancarpio.com
 
 """
-from pymongo import Connection
 import yaml
-import sys, os
-from ConfigParser import SafeConfigParser
-
+import sys
+import config
 
 def main():
     """ This script is called by puppet  """
@@ -36,23 +34,13 @@ def main():
         print "ERROR: Please Supply A Hostname or FQDN"
         sys.exit(1)
 
-    # Import conf.ini
-    parser = SafeConfigParser()
-    config = os.path.join(os.path.dirname(__file__),"../conf/conf.ini")
-    parser.read(config)
-    database = parser.get('mongodb_info', 'mongodb_db_name')
-    collection = parser.get('mongodb_info', 'mongodb_collection_name')
-    host = parser.get('mongodb_info', 'mongodb_servers')
+    col = config.main()
 
     # Probably want to remove this. This is because I don't use FQDNs in my current puppet manifest. 
     # also made this easier for me to test.
     node = sys.argv[1]
     node = node.split('.')[0]
 
-    # Connect to mongodb
-    con = Connection(host)
-    col = con[database][collection]
-	
     # Find the node given at a command line argument
     d = col.find_one({"node": node}) 
     if d == None:

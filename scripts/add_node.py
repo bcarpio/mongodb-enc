@@ -24,22 +24,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 :web: http://www.briancarpio.com
 
 """
-from pymongo import Connection
-import sys, os
-from ConfigParser import SafeConfigParser
+import sys
 import argparse
+import config
 
 def main():
     """ This script adds nodes to the mongodb enc """
 
-    parser = SafeConfigParser()
-    config = os.path.join(os.path.dirname(__file__),"../conf/conf.ini")
-    parser.read(config)
-    database = parser.get('mongodb_info', 'mongodb_db_name')
-    collection = parser.get('mongodb_info', 'mongodb_collection_name')
-    host = parser.get('mongodb_info', 'mongodb_servers')
-    con = Connection(host)
-    col = con[database][collection]
+    col = config.main()
     cmd_parser = argparse.ArgumentParser(description='Add Nodes To Mongodb ENC')
     cmd_parser.add_argument('-a', '--action', dest='puppet_action', choices=['append', 'new'], help='Append Or Recreate Default Node', required=True)
     cmd_parser.add_argument('-n', '--node', dest='puppet_node', help='Puppet Node Hostname', required=True)
