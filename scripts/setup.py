@@ -31,7 +31,7 @@ import argparse
 
 
 def main():
-    """ Main definition """
+    """ This script creates the default node definition """
 
     parser = SafeConfigParser()
     config = os.path.join(os.path.dirname(__file__),"../conf/conf.ini")

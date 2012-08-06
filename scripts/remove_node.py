@@ -31,7 +31,7 @@ import argparse
 
 def main():
 
-    """ Main definition """
+    """ This script removes nodes from mongodb """
 
     parser = SafeConfigParser()
     config = os.path.join(os.path.dirname(__file__),"../conf/conf.ini")

@@ -31,7 +31,7 @@ from ConfigParser import SafeConfigParser
 
 
 def main():
-    """ Main definition """
+    """ This script is called by puppet  """
     if (len(sys.argv) < 2):
         print "ERROR: Please Supply A Hostname or FQDN"
         sys.exit(1)
