@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 :author: Brian Carpio
 :email: bcarpio@thetek.net
-:web: http://www.thetek.net
+:web: http://www.briancarpio.com
 
 """
 from pymongo import Connection
