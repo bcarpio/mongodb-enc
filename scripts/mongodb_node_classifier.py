@@ -39,7 +39,7 @@ def main():
     # Probably want to remove this. This is because I don't use FQDNs in my current puppet manifest. 
     # also made this easier for me to test.
     node = sys.argv[1]
-    node = node.split('.')[0]
+    #node = node.split('.')[0]
 
     # Find the node given at a command line argument
     d = col.find_one({"node": node}) 
