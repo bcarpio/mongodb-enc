@@ -24,7 +24,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 :web: http://www.briancarpio.com
 
 """
-from pymongo import Connection
+from pymongo import MongoClient
 import os
 from ConfigParser import SafeConfigParser
 
@@ -37,7 +37,7 @@ def main():
     database = parser.get('mongodb_info', 'mongodb_db_name')
     collection = parser.get('mongodb_info', 'mongodb_collection_name')
     host = parser.get('mongodb_info', 'mongodb_servers')
-    con = Connection(host)
+    con = MongoClient(host)
     col = con[database][collection]
     return col
 
