@@ -27,6 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 import yaml
 import sys
 import config
+from pymongo.read_preferences import ReadPreference
 
 def main():
     """ This script is called by puppet  """
@@ -39,10 +40,10 @@ def main():
     # Probably want to remove this. This is because I don't use FQDNs in my current puppet manifest. 
     # also made this easier for me to test.
     node = sys.argv[1]
-    #node = node.split('.')[0]
+    node = node.split('.')[0]
 
     # Find the node given at a command line argument
-    d = col.find_one({"node": node}) 
+    d = col.find_one({"node": node}, read_preference=ReadPreference.PRIMARY) 
     if d == None:
         print "ERROR: Node "+node+" Not Found In ENC" 
         sys.exit(1)
