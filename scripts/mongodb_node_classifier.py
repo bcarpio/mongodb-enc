@@ -29,46 +29,80 @@ import sys
 import config
 from pymongo.read_preferences import ReadPreference
 
+
+def parse_input(input):
+    if len(input) < 2:
+        print "ERROR: Please Supply a Hostname or FQDN"
+        sys.exit(1)
+
+
+def find_node(conf, node):
+    node_info = conf.find_one(
+        {"node": node},
+        read_preference=ReadPreference.PRIMARY
+    )
+    if node_info is None:
+        print "ERROR: Node "+node+" Not Found In ENC"
+        sys.exit(1)
+
+    return node_info
+
+
+def merge_dict(a, b, path=None):
+    # Merges b into a, in case of conflict, b wins
+    if path is None: path = []
+    for key in b:
+        if key in a:
+            if isinstance(a[key], dict) and isinstance(b[key], dict):
+                # Merges dict keys recursively
+                merge_dict(a[key], b[key], path + [str(key)])
+            elif a[key] == b[key]:
+                # Leaves a[key] set if values are identical
+                pass
+            else:
+                # Takes the value for b[key] in case of conflict
+                a[key] = b[key] 
+        else:
+            # If key is not already in a, adds it
+            a[key] = b[key]
+    return a
+
+
 def main():
     """ This script is called by puppet  """
-    if (len(sys.argv) < 2):
-        print "ERROR: Please Supply A Hostname or FQDN"
-        sys.exit(1)
 
-    col = config.main()
+    parse_input(sys.argv)
+    conf = config.main()
 
-    # Probably want to remove this. This is because I don't use FQDNs in my current puppet manifest. 
-    # also made this easier for me to test.
-    node = sys.argv[1]
-    node = node.split('.')[0]
+    # This is because we don't use FQDNs in our current puppet manifests
+    # Probably want to remove this
+    node = (sys.argv[1]).split('.')[0]
 
-    # Find the node given at a command line argument
-    d = col.find_one({"node": node}, read_preference=ReadPreference.PRIMARY) 
-    if d == None:
-        print "ERROR: Node "+node+" Not Found In ENC" 
-        sys.exit(1)
+    # Finds the input node
+    node_info = find_node(conf, node)
 
-    # Check if the node requiers inheritance
-    n = col.find_one({"node": node})
-    if 'inherit' in n:
-        i = True
-        while i == True:
-            inode = n['inherit']
-            if not col.find_one({"node" : inode}):
-                print "ERROR: Inheritance Node "+inode+" Not Found In ENC"
-                sys.exit(1)
-            idict = col.find_one({"node": inode})
-            if 'classes' in idict['enc']:
-                iclass = idict['enc']['classes']
-                if 'classes' in n['enc']:
-                    d['enc']['classes'].update(iclass)
-                else:
-                    d['enc']['classes'] = iclass 
-            n = col.find_one({"node": inode})
-            if 'inherit' not in n:
-                i = False
+    # Default the final_node_info to the input node
+    final_node_info = node_info
 
-    print yaml.safe_dump(d['enc'], default_flow_style=False)
+    # Check if the input node has inheritance set
+    if 'inherit' in node_info:
+        inheritance = True
+
+        while inheritance:
+            # Finds the node being inherited from
+            inherit_node_info = find_node(conf, node_info['inherit'])
+
+            # Updates the final node enc info by merging inherited and final node enc info recursively
+            final_node_info['enc'] = merge_dict(inherit_node_info['enc'], final_node_info['enc'])
+
+            # Sets the node_info to the inherited node, to recurse through the inherited node's inheritance
+            node_info = find_node(conf, node_info['inherit'])
+
+            # Breaks out of while once a node with no inheritance is found
+            if 'inherit' not in node_info:
+                inheritance = False
+
+    print yaml.safe_dump(final_node_info['enc'], default_flow_style=False)
 
 
 if __name__ == "__main__":
